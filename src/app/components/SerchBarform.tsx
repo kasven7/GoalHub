@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Team } from "../../../types";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -30,26 +30,27 @@ export default function SearchBarform({
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) =>{
         if(event.key === 'ArrowDown'){
-            let lenght = 0;
+            let length = 0;
             if(filteredTeams.length >10){
-                lenght = 10;
+                length = 10;
             }else {
-                lenght = filteredTeams.length;
+                length = filteredTeams.length;
             }
-            setFocusedIndex(prevIndex => (prevIndex<length -1? prevIndex -1 : prevIndex));
+            console.log(focusedIndex)
+            setFocusedIndex(prevIndex => (prevIndex < length - 1 ? prevIndex + 1 : prevIndex));
         
-        }else if(event.key ==='ArrowUp'){
+        }else if(event.key === 'ArrowUp'){
             event.preventDefault();
-            setFocusedIndex(prevIndex => (prevIndex > 0 ? prevIndex -1 : prevIndex));
+            setFocusedIndex(prevIndex => (prevIndex > 0 ? prevIndex - 1 : prevIndex));
         }else if (event.key === 'Enter'){
             if(focusedIndex !== -1){
                 const teamId = filteredTeams[focusedIndex].team.id;
-                router.push(`/team${teamId}`);
+                router.push(`/team/${teamId}`);
                 setSearchTerm('');
             }
         }
     }
-    const handleTeamItemClick = ( ) => {
+    const handleTeamItemClick = () => {
         setSearchTerm('');
     }
 
@@ -76,14 +77,15 @@ export default function SearchBarform({
             value = {searchTerm}
             onChange={handleSearchChange}
             onKeyDown={handleKeyDown}
-            placeholder="Search for a team"
-            className="w-full bg-gradient-to-r from-neutral-5100/60 to to-black/25
+            placeholder="Szukaj"
+            className="w-full from-neutral-60 to to-black/25
             bg-transparent p-2 outline-none border-neutral-100/60 border-[1px] rounded-4xl hover:border-blue-400 focus:border-blue-400
-            focus:from-blue-400/60 text-neutral-100 placeholder:text-neutral-100/70"
+            focus:from-red-400/60 text-neutral-100 placeholder:text-neutral-100/70"
             />
             {
                 searchTerm && filteredTeams.length > 0 && showFilteredBox ? (
                     <div
+                        ref = {teamListRef}
                         className="absolute top-full left-2 w-full max-w-md bg-black/80
                         z-20 flex flex-col"
                     >
@@ -91,8 +93,8 @@ export default function SearchBarform({
                            <Link
                            href = {`/team/${standing.team.id}`}
                            key={standing.team.id}
-                           className={`p-2 text-neutral-100 ${i===focusedIndex? 
-                            'bg-neutral-100/40' :'' }`}
+                           className={`p-2 text-neutral-100 ${i === focusedIndex
+                            ? 'bg-neutral-100/40' : '' }`}
                             onClick={() =>handleTeamItemClick()}
                            >
                             {standing.team.name}

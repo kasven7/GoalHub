@@ -1,3 +1,5 @@
+
+// szablon do przechwytywania danych z API zawiera typy
 type Standing = {
     league: League;
 }

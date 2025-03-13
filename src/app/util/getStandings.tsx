@@ -5,12 +5,16 @@ import moment from "moment";
 import { USE_SAMPLE } from '../sampleData/useSample';
 import getStandingsSample from '../sampleData/getStandingsSample';
 
+
 export default async function getStandings():Promise<Standing[]> {
 
+//  jezeli USE_SAMPLE true to nie bedzie zasysac niepotrzebnie danych z API
     if(USE_SAMPLE){
         return getStandingsSample();
     }
-    
+
+
+    // pobieranie czasu do konkretnego sezonu  
     const currentTime = moment();
     const month = currentTime.month();
     let year;
@@ -20,6 +24,8 @@ export default async function getStandings():Promise<Standing[]> {
     }else{
         year = currentTime.year();
     }
+
+    // inicjalizacja API 
     const API_KEY: string = process.env.API_KEY as string;
     const options = {
         method: 'GET',
@@ -28,9 +34,14 @@ export default async function getStandings():Promise<Standing[]> {
 		'x-rapidapi-host': 'api-football-v1.p.rapidapi.com'
     },
     next: {
+        // revalidate zeby się odnawiało
         revalidate: 60*60*24
     }
 };
+
+
+// szablon dzieki ktoremu przechwytujemy dane o meczach (standing) na podstawie lig i ID tych lig
+// 
     const standings: Standing[] = [];
 
     const leagues = [

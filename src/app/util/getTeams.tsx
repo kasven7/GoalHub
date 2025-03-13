@@ -5,7 +5,7 @@ import getStandings from './getStandings';
 export default async function getTeams(): Promise<Team[]>{
 
 
-
+// za pomoca getStandings czyli metody ktora pobiera info o meczach po ID Ligowych, pobieramy dane o druzynach 
     try{
         const standings: Standing[] = await getStandings();
         const teams: Team[] = [];
