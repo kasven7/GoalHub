@@ -58,5 +58,107 @@ public class TeamStanding {
     })
     private Games awayGames;
 
+    public int getRank() {
+        return rank;
+    }
 
+    public void setRank(int rank) {
+        this.rank = rank;
+    }
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
+    public int getPoints() {
+        return points;
+    }
+
+    public void setPoints(int points) {
+        this.points = points;
+    }
+
+    public int getGoalsDiff() {
+        return goalsDiff;
+    }
+
+    public void setGoalsDiff(int goalsDiff) {
+        this.goalsDiff = goalsDiff;
+    }
+
+    public String getGroup() {
+        return group;
+    }
+
+    public void setGroup(String group) {
+        this.group = group;
+    }
+
+    public String getForm() {
+        return form;
+    }
+
+    public void setForm(String form) {
+        this.form = form;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getUpdate() {
+        return update;
+    }
+
+    public void setUpdate(String update) {
+        this.update = update;
+    }
+
+    public Standing getStanding() {
+        return standing;
+    }
+
+    public void setStanding(Standing standing) {
+        this.standing = standing;
+    }
+
+    public Games getAllGames() {
+        return allGames;
+    }
+
+    public void setAllGames(Games allGames) {
+        this.allGames = allGames;
+    }
+
+    public Games getHomeGames() {
+        return homeGames;
+    }
+
+    public void setHomeGames(Games homeGames) {
+        this.homeGames = homeGames;
+    }
+
+    public Games getAwayGames() {
+        return awayGames;
+    }
+
+    public void setAwayGames(Games awayGames) {
+        this.awayGames = awayGames;
+    }
 }
