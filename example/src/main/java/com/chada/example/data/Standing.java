@@ -16,19 +16,6 @@ public class Standing {
     @JsonManagedReference
     private List<TeamStanding> teamStandings;
 
-    public League getLeague() {
-        return league;
-    }
 
-    public void setLeague(League league) {
-        this.league = league;
-    }
 
-    public List<TeamStanding> getTeamStandings() {
-        return teamStandings;
-    }
-
-    public void setTeamStandings(List<TeamStanding> teamStandings) {
-        this.teamStandings = teamStandings;
-    }
 }
