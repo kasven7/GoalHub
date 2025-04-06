@@ -8,11 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class ExampleApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ExampleApplication.class, args);
-<<<<<<< HEAD
-		Client.main();
-=======
+
 		//Client.main();
->>>>>>> eab318df3769328bee16134f3a2201a1c8594a01
+
 	}
 
 }

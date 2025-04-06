@@ -337,6 +337,8 @@ class Standing {
     private Stats away;
     private String update;  // ISO date string
 
+
+
     public int getRank() {
         return rank;
     }

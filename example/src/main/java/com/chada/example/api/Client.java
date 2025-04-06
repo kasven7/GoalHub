@@ -42,10 +42,18 @@ class Standingsy {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String name;
     private Integer points;
     private Integer goaldiff;
-    private Integer form;
+    private String form;
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public Long getId() {return id;}
     public void setId(Long id) {this.id = id;}
@@ -53,26 +61,24 @@ class Standingsy {
     public void setPoints(Integer points) {this.points = points;}
     public Integer getGoaldiff() {return goaldiff;}
     public void setGoaldiff(Integer goaldiff) {this.goaldiff = goaldiff;}
-    public Integer getForm() {return form;}
-    public void setForm(Integer form) {this.form = form;}
+    public String getForm() {return form;}
+    public void setForm(String form) {this.form = form;}
 }
 
 @Repository
 interface TeamRepository extends JpaRepository<League, Long> {}
 
-/*@Repository
-interface StandsRepository extends JpaRepository<Team, Long> {}*/
+@Repository
+interface StandsRepository extends JpaRepository<Standingsy, Long> {}
 
 @Component
 public class Client implements CommandLineRunner {
 
     @Autowired
     private TeamRepository teamRepository;
-
-/*
    @Autowired
     private StandsRepository standsRepository;
-*/
+
 
     @Override
     public void run(String... args) throws Exception {
@@ -100,13 +106,22 @@ public class Client implements CommandLineRunner {
                     league.setLogo(Liga.getLeague().getLogo());
                     teamRepository.save(league);
                 });
-                /*apiResponse.getResponse().forEach(Standing -> {
-                    Standing stand = new Standing();
-                    stand.setTeam(Standing.getLeague().getStandings());
-                    team.setLogo(team.getLogo());
-                    team.setId(team.getId());
-                    standsRepository.save(team);
-                });*/
+
+
+                apiResponse.getResponse().forEach(responses -> {
+                    responses.getLeague().getStandings().forEach(standingList -> {
+                        standingList.forEach(standing -> {
+                            Standingsy stand = new Standingsy();
+                            stand.setName(standing.getTeam().getName());
+                            stand.setPoints(standing.getPoints());
+                            stand.setGoaldiff(standing.getGoalsDiff());
+                            stand.setForm(standing.getForm());
+
+                            standsRepository.save(stand);
+                        });
+                    });
+                });
+
 
             }
         } catch (Exception e) {
