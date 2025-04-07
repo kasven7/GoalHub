@@ -1,19 +1,13 @@
-package com.chada.example.data;
+package com.chada.example.model;
 
-import jakarta.persistence.Embeddable;
-import jakarta.persistence.Embedded;
+import com.chada.example.api.Goals;
 
-@Embeddable
-public class Games {
+class Stats {
     private int played;
     private int win;
     private int draw;
     private int lose;
-
-    @Embedded
     private Goals goals;
-
-    // Gettery i settery
 
     public int getPlayed() {
         return played;

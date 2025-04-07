@@ -1,82 +1,25 @@
-package com.chada.example.api;
+package com.chada.example.client;
+
+import com.chada.example.dto.ApiResponse;
+import com.chada.example.api.League;
+import com.chada.example.repositories.StandsRepository;
+import com.chada.example.repositories.TeamRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.List;
-
-import com.chada.example.data.League;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.stereotype.Component;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
-@Entity
-@Table(name = "teams")
-class Teamy {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    private String country;
-    private String logo;
-
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getCountry() { return country; }
-    public void setCountry(String country) { this.country = country; }
-    public String getLogo() { return logo; }
-    public void setLogo(String logo) { this.logo = logo; }
-}
-@Entity
-@Table(name = "standingsy")
-class Standingsy {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    private String name;
-    private Integer points;
-    private Integer goaldiff;
-    private String form;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getId() {return id;}
-    public void setId(Long id) {this.id = id;}
-    public Integer getPoints() {return points;}
-    public void setPoints(Integer points) {this.points = points;}
-    public Integer getGoaldiff() {return goaldiff;}
-    public void setGoaldiff(Integer goaldiff) {this.goaldiff = goaldiff;}
-    public String getForm() {return form;}
-    public void setForm(String form) {this.form = form;}
-}
-
-@Repository
-interface TeamRepository extends JpaRepository<League, Long> {}
-
-@Repository
-interface StandsRepository extends JpaRepository<Standingsy, Long> {}
 
 @Component
 public class Client implements CommandLineRunner {
 
     @Autowired
     private TeamRepository teamRepository;
-   @Autowired
+    @Autowired
     private StandsRepository standsRepository;
 
 
@@ -129,3 +72,4 @@ public class Client implements CommandLineRunner {
         }
     }
 }
+

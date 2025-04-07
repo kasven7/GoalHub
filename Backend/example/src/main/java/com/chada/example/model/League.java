@@ -1,21 +1,18 @@
-package com.chada.example.data;
+package com.chada.example.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import java.util.List;
 
-@Entity
-public class League {
-    @Id
+class League {
     private int id;
     private String name;
-    private String country;
+    private String type;
     private String logo;
+    // New fields added based on the JSON response
+    private String country;
     private String flag;
     private int season;
-
-    @OneToOne(mappedBy = "league")
-    private Standing standing;
+    // The standings is represented as a list of lists of Standing objects
+    private List<List<Standing>> standings;
 
     public int getId() {
         return id;
@@ -33,12 +30,12 @@ public class League {
         this.name = name;
     }
 
-    public String getCountry() {
-        return country;
+    public String getType() {
+        return type;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getLogo() {
@@ -47,6 +44,14 @@ public class League {
 
     public void setLogo(String logo) {
         this.logo = logo;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String country) {
+        this.country = country;
     }
 
     public String getFlag() {
@@ -65,11 +70,11 @@ public class League {
         this.season = season;
     }
 
-    public Standing getStanding() {
-        return standing;
+    public List<List<Standing>> getStandings() {
+        return standings;
     }
 
-    public void setStanding(Standing standing) {
-        this.standing = standing;
+    public void setStandings(List<List<Standing>> standings) {
+        this.standings = standings;
     }
 }
