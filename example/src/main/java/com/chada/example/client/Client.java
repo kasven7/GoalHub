@@ -1,7 +1,6 @@
 package com.chada.example.client;
 
 import com.chada.example.dto.ApiResponse;
-import com.chada.example.model.League;
 import com.chada.example.repositories.StandsRepository;
 import com.chada.example.repositories.TeamRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,45 +38,6 @@ public class Client implements CommandLineRunner {
         for (int i = 0; i < ligi.length; i++) {
             int leagueId = ligi[i];
 
-            String createLeagues = String.format(
-                    "CREATE TABLE IF NOT EXISTS leagues (" +
-                            "id SERIAL PRIMARY KEY, " +
-                            "year INT, " +
-                            "name VARCHAR(255), " +
-                            "country VARCHAR(255), " +
-                            "logo VARCHAR(255)" +
-                            ")");
-            jdbcTemplate.execute(createLeagues);
-
-            String createLeaguesTable = String.format(
-                    "CREATE TABLE IF NOT EXISTS leagues_%d (" +
-                            "id SERIAL PRIMARY KEY, " +
-                            "year INT, " +
-                            "name VARCHAR(255), " +
-                            "country VARCHAR(255), " +
-                            "logo VARCHAR(255)" +
-                            ")", leagueId);
-            jdbcTemplate.execute(createLeaguesTable);
-
-            // Tworzenie tabeli standingsy dla danej ligi
-            String createStandingsTable = String.format(
-                    "CREATE TABLE IF NOT EXISTS standingsy_%d (" +
-                            "id SERIAL PRIMARY KEY, " +
-                            "name VARCHAR(255), " +
-                            "points INT, " +
-                            "goaldiff INT, " +
-                            "form VARCHAR(50), " +
-                            "win INT, " +
-                            "draw INT, " +
-                            "lose INT, " +
-                            "played INT" +
-                            ")", leagueId);
-            jdbcTemplate.execute(createStandingsTable);
-
-
-
-
-
             HttpClient client = HttpClient.newHttpClient();
             HttpRequest request = (HttpRequest) HttpRequest.newBuilder()
 
@@ -109,28 +69,28 @@ public class Client implements CommandLineRunner {
                 if (apiResponse.getResponse() != null && !apiResponse.getResponse().isEmpty()) {
                     apiResponse.getResponse().forEach(Liga -> {
 
-                        String checkIfExists = String.format(
-                                "SELECT COUNT(*) FROM leagues_%d WHERE name = ?", leagueId);
+                        String checkIfExists =
+                                "SELECT COUNT(*) FROM leagues WHERE name = ?";
                         Integer count = jdbcTemplate.queryForObject(checkIfExists, new Object[]{Liga.getLeague().getName()}, Integer.class);
 
                         if (count == null || count == 0) {
 
-                            String insertLeague = String.format(
-                                    "INSERT INTO leagues_%d (year, name, country, logo) VALUES (?, ?, ?, ?)",
-                                    leagueId);
+                            if (Liga.getLeague().getName() != null && Liga.getLeague().getLogo() != null) {
+                                String type = Liga.getLeague().getType() != null ? Liga.getLeague().getType() : "default_type";
 
-                            jdbcTemplate.update(insertLeague,
-                                    Liga.getLeague().getSeason(),
-                                    Liga.getLeague().getName(),
-                                    Liga.getLeague().getCountry(),
-                                    Liga.getLeague().getLogo());
+                                String insertLeague = "INSERT INTO leagues (name, type, logo) VALUES (?, ?, ?)";
+                                jdbcTemplate.update(insertLeague,
+                                        Liga.getLeague().getName(),
+                                        Liga.getLeague().getType(),
+                                        Liga.getLeague().getLogo());
+
+
+                            }
                         }
-
-
                         });
 
 
-                    apiResponse.getResponse().forEach(responses -> {
+        /*            apiResponse.getResponse().forEach(responses -> {
                         responses.getLeague().getStandings().forEach(standingList -> {
                             standingList.forEach(standing -> {
                                 String checkIfExists = String.format(
@@ -153,7 +113,7 @@ public class Client implements CommandLineRunner {
                                 }
                             });
                         });
-                    });
+                    });*/
 
 
                 }
@@ -161,12 +121,12 @@ public class Client implements CommandLineRunner {
                 e.printStackTrace();
             }
         }
-        for (int leagueId : ligi) {
-            String insertData = String.format(
-                    "INSERT INTO leagues (league_id, year, name, country, logo) " +
-                            "SELECT %d, year, name, country, logo FROM leagues_%d", leagueId, leagueId);
-            jdbcTemplate.execute(insertData);
-        }
+       // for (int leagueId : ligi) {
+         //   String insertData = String.format(
+           //         "INSERT INTO leagues (league_id, year, name, country, logo) " +
+             //               "SELECT %d, year, name, country, logo FROM leagues_%d", leagueId, leagueId);
+           // jdbcTemplate.execute(insertData);
+       // }
     }
 }
 

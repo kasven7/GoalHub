@@ -1,9 +1,9 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: myuser
-    password: mypassword
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:mariadb://localhost:3306/football_db
+    username: root
+    password: haslo-root-a
+    driver-class-name: org.mariadb.jdbc.Driver
   jpa:
     hibernate:
       ddl-auto: create-drop
@@ -11,8 +11,8 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    database: mysql
+    database-platform: org.hibernate.dialect.MariaDBDialect
 api:
   football:
     url: https://api-football-v1.p.rapidapi.com/v3

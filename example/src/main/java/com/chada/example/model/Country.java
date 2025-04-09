@@ -1,11 +1,17 @@
 package com.chada.example.model;
 
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class Country {
     private String name;
     private String code;
     private String flag;
 
-    public String getName() {
+    /*public String getName() {
         return name;
     }
 
@@ -27,5 +33,5 @@ public class Country {
 
     public void setFlag(String flag) {
         this.flag = flag;
-    }
+    }*/
 }
