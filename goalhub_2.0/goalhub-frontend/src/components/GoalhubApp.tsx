@@ -17,9 +17,10 @@ export default function GoalhubApp() {
         .catch((err) => console.error(err));
     } else {
       axios
-        .get(`/api/matches/${league}`)
+        .get(`/api/matches`)
         .then((res) => setMatches(res.data))
         .catch((err) => console.error(err));
+        console.log(matches);
     }
   }, [league, showStandings]);
 
@@ -156,14 +157,14 @@ export default function GoalhubApp() {
                       className="border-b border-white/10 hover:bg-white/10 transition-colors duration-150"
                     >
                       <td className="px-6 py-3 text-gray-300">
-                        {new Date(match.match_date).toLocaleDateString()}
+                        {new Date(match.matchDate).toLocaleDateString()}
                       </td>
                       <td className="px-6 py-3 font-semibold text-right">
                         {match.team1}
                       </td>
                       <td className="px-4 text-center font-bold">
-                        {match.team1_goals !== null && match.team2_goals !== null 
-                          ? `${match.team1_goals} - ${match.team2_goals}`
+                        {match.team1_Goals !== null && match.team2_Goals !== null 
+                          ? `${match.team1_Goals} - ${match.team2_Goals}`
                           : 'vs'}
                       </td>
                       <td className="px-6 py-3 font-semibold">
@@ -186,7 +187,7 @@ export default function GoalhubApp() {
       {/* Footer */}
       <footer className="bg-neutral-950 text-gray-400 text-sm py-4 border-t border-white/10">
         <div className="max-w-6xl mx-auto px-6 text-center">
-          &copy; {new Date().getFullYear()} GoalHub • Created by Adrian Bielenik, Kacper Kowalski, Szymon Kobyłka-Pilecki • All rights reserved.
+          &copy; {new Date().getFullYear()} GoalHub • Created by Adrian Bielenik, Kacper Kowalski, Szymon Kobyłka-Pilecki, Ksawery :) • All rights reserved.
         </div>
       </footer>
     </div>
