@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/laliga")
+@RequestMapping("/api/la-liga")
 public class LaLeagueController {
     @Autowired
     private LaLeagueService service;

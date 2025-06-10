@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export default function GoalhubApp() {
   const [league, setLeague] = useState<
-    'premier-league' | 'laliga' | 'bundesliga' | 'ekstraklasa' | 'serie-a' | 'liga-mistrzow'
+    'premier-league' | 'la-liga' | 'bundesliga' | 'ekstraklasa' | 'serie-a' | 'liga-mistrzow'
   >('premier-league');
   const [data, setData] = useState([]);
   const [showStandings, setShowStandings] = useState(true);
@@ -17,7 +17,7 @@ export default function GoalhubApp() {
         .catch((err) => console.error(err));
     } else {
       axios
-        .get(`/api/matches`)
+        .get(`/api/matches/${league}`)
         .then((res) => setMatches(res.data))
         .catch((err) => console.error(err));
         console.log(matches);
@@ -26,11 +26,11 @@ export default function GoalhubApp() {
 
   const tabs = [
     { id: 'premier-league', name: 'Premier League' },
-    { id: 'laliga', name: 'LaLiga' },
+    { id: 'la-liga', name: 'La Liga' },
     { id: 'bundesliga', name: 'Bundesliga' },
     { id: 'ekstraklasa', name: 'Ekstraklasa' },
     { id: 'serie-a', name: 'Serie A' },
-    { id: 'liga-mistrzow', name: 'Liga Mistrzów' }
+    { id: 'liga-mistrzow', name: 'Liga Mistrzow' }
   ];
 
   const toggleView = () => {
