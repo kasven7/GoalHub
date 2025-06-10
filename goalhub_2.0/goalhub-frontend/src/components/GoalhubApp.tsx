@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 
 export default function GoalhubApp() {
-    const [league, setLeague] = useState<'premier-league' | 'laliga' | 'bundesliga'>('bundesliga');
+    const [league, setLeague] = useState<'premier-league' | 'laliga' | 'bundesliga' | 'ekstraklasa' | 'serie-a'
+        | 'liga-mistrzow'>('premier-league');
     const [data, setData] = useState([]);
 
     useEffect(() => {
@@ -14,7 +15,10 @@ export default function GoalhubApp() {
     const tabs = [
         { id: 'premier-league', name: 'Premier League' },
         { id: 'laliga', name: 'LaLiga' },
-        { id: 'bundesliga', name: 'Bundesliga' }
+        { id: 'bundesliga', name: 'Bundesliga' },
+        { id: 'ekstraklasa', name: 'Ekstraklasa' },
+        { id: 'serie-a', name: 'Serie A' },
+        { id: 'liga-mistrzow', name: 'Liga Mistrzow' }
     ];
 
     return (
