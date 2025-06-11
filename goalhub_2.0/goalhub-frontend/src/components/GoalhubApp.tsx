@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 
 export default function GoalhubApp() {
+  const [currentPage, setCurrentPage] = useState<'home' | 'siuuu'>('home');
   const [league, setLeague] = useState<
     'premier-league' | 'la-liga' | 'bundesliga' | 'ekstraklasa' | 'serie-a' | 'liga-mistrzow'
   >('premier-league');
@@ -12,13 +12,27 @@ export default function GoalhubApp() {
   const [originalData, setOriginalData] = useState([]);
   const [originalMatches, setOriginalMatches] = useState([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const [showCalendar, setShowCalendar] = useState(false);
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  
   const [favorites, setFavorites] = useState<string[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('favorites');
-      return saved ? JSON.parse(saved) : [];
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            return parsed;
+          }
+        } catch (error){
+          console.error("Invalid favorites JSON in localStorage:", error);
+        }
+      }
     }
     return [];
   });
+  
   const [darkMode, setDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedMode = localStorage.getItem('theme');
@@ -28,24 +42,19 @@ export default function GoalhubApp() {
     return true;
   });
 
-  // Apply theme class and save preference
   useEffect(() => {
     if (darkMode) {
       document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
     } else {
-      document.documentElement.classList.add('light');
       document.documentElement.classList.remove('dark');
     }
     localStorage.setItem('theme', darkMode ? 'dark' : 'light');
   }, [darkMode]);
 
-  // Save favorites to localStorage
   useEffect(() => {
     localStorage.setItem('favorites', JSON.stringify(favorites));
   }, [favorites]);
 
-  // Watch for system preference changes
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = (e: MediaQueryListEvent) => {
@@ -59,19 +68,27 @@ export default function GoalhubApp() {
 
   useEffect(() => {
     if (showStandings) {
-      axios
-        .get(`/api/${league}`)
-        .then((res) => {
-          setData(res.data);
-          setOriginalData(res.data);
+      fetch(`/api/${league}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setData(data);
+          setOriginalData(data);
         })
         .catch((err) => console.error(err));
     } else {
-      axios
-        .get(`/api/matches/${league}`)
-        .then((res) => {
-          setMatches(res.data);
-          setOriginalMatches(res.data);
+      fetch(`/api/matches/${league}`)
+        .then((res) => res.json())
+        .then((data) => {
+          setMatches(data);
+          setOriginalMatches(data);
+          
+          // Extract unique dates from matches for the current league
+          const dates = data
+            .map((match: any) => new Date(match.matchDate).toDateString())
+            .filter((date: string, index: number, array: string[]) => array.indexOf(date) === index)
+            .sort((a: string, b: string) => new Date(a).getTime() - new Date(b).getTime());
+          
+          setAvailableDates(dates);
         })
         .catch((err) => console.error(err));
     }
@@ -79,6 +96,13 @@ export default function GoalhubApp() {
 
   useEffect(() => {
     let filtered = showStandings ? [...originalData] : [...originalMatches];
+    
+    // Apply date filter for matches
+    if (!showStandings && selectedDate) {
+      filtered = filtered.filter((match: any) => 
+        new Date(match.matchDate).toDateString() === selectedDate
+      );
+    }
     
     // Apply search filter
     if (searchTerm.trim() !== '') {
@@ -107,7 +131,7 @@ export default function GoalhubApp() {
     }
     
     showStandings ? setData(filtered) : setMatches(filtered);
-  }, [searchTerm, showStandings, originalData, originalMatches, showFavoritesOnly, favorites]);
+  }, [searchTerm, showStandings, originalData, originalMatches, showFavoritesOnly, favorites, selectedDate]);
 
   const tabs = [
     { id: 'premier-league', name: 'Premier League' },
@@ -120,6 +144,8 @@ export default function GoalhubApp() {
 
   const toggleView = () => {
     setSearchTerm('');
+    setSelectedDate(null); // Reset date filter when switching views
+    setShowCalendar(false); // Hide calendar when switching to standings
     setShowStandings((prev) => {
       const next = !prev;
       if (next) {
@@ -143,6 +169,100 @@ export default function GoalhubApp() {
     );
   };
 
+  const handleDateSelect = (date: string) => {
+    setSelectedDate(date === selectedDate ? null : date);
+    setShowCalendar(false);
+  };
+
+  const clearDateFilter = () => {
+    setSelectedDate(null);
+  };
+
+  const formatDateForDisplay = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', { 
+      weekday: 'short', 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
+  // Siuuu Page Component
+  const SiuuuPage = () => (
+    <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 dark:bg-gradient-to-b dark:from-neutral-900 dark:to-black dark:text-white font-sans transition-colors duration-200">
+      {/* Header with Back Button */}
+      <header className="bg-white border-b border-gray-200 shadow-md py-4 px-6 dark:bg-neutral-950 dark:border-white/10 relative z-10">
+        <div className="max-w-6xl mx-auto flex justify-between items-center gap-4">
+          <button 
+            onClick={() => setCurrentPage('home')}
+            className="p-2 px-4 rounded-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all duration-300 hover:scale-105"
+          >
+            ← Back to GoalHub
+          </button>
+          
+          <h1 className="text-2xl font-bold tracking-tight">SIUUUUUU! 🐐</h1>
+          
+          <button 
+            onClick={() => setDarkMode(!darkMode)}
+            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+          >
+            {darkMode ? (
+              <span className="text-yellow-300">☀️</span>
+            ) : (
+              <span className="text-gray-700">🌙</span>
+            )}
+          </button>
+        </div>
+      </header>
+
+      {/* Full Page Ronaldo GIF */}
+      <div className="flex-1 relative overflow-hidden">
+        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-900 via-purple-900 to-red-900">
+          {/* Background overlay for better text visibility */}
+          <div className="absolute inset-0 bg-black/30"></div>
+          
+          {/* Ronaldo GIF */}
+          <img
+            src="assets/Ronaldo.gif"
+            alt="Cristiano Ronaldo Celebration"
+            className="w-full h-full object-cover"
+            style={{ minHeight: '100vh' }}
+          />
+          
+          {/* Overlay text */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="text-center space-y-6 z-10">
+              <h1 className="text-8xl md:text-9xl font-black text-white drop-shadow-2xl animate-pulse">
+                SIUUUU!
+              </h1>
+              <p className="text-2xl md:text-3xl text-white font-bold drop-shadow-lg">
+                🐐 THE GOAT 🐐
+              </p>
+              <div className="flex justify-center space-x-4 text-4xl animate-bounce">
+                <span>⚽</span>
+                <span>🏆</span>
+                <span>👑</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="bg-gray-100 text-gray-500 text-sm py-4 border-t border-gray-200 dark:bg-neutral-950 dark:text-gray-400 dark:border-white/10 relative z-10">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          &copy; {new Date().getFullYear()} GoalHub • SIUUUUU Edition • All rights reserved.
+        </div>
+      </footer>
+    </div>
+  );
+
+  // If on siuuu page, render that instead
+  if (currentPage === 'siuuu') {
+    return <SiuuuPage />;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 dark:bg-gradient-to-b dark:from-neutral-900 dark:to-black dark:text-white font-sans transition-colors duration-200">
       {/* Header */}
@@ -160,7 +280,12 @@ export default function GoalhubApp() {
             )}
           </button>
           
-          <h1 className="text-2xl font-bold tracking-tight">⚽ GoalHub</h1>
+          <h1 
+            className="text-2xl font-bold tracking-tight cursor-pointer hover:text-emerald-600 transition-colors duration-300"
+            onClick={() => setCurrentPage('siuuu')}
+          >
+            ⚽ GoalHub
+          </h1>
           
           <div className="flex-1 max-w-md">
             <div className="flex items-center gap-2">
@@ -189,28 +314,21 @@ export default function GoalhubApp() {
 
       {/* Main Content */}
       <main className="relative flex-grow py-10 px-4">
-        <div className="absolute left-295 top-30">
-          <button
-                onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
-                className={`rounded-full px-6 py-2.5 font-medium border transition-all duration-300 hover:scale-105 ${showFavoritesOnly ? 'text-yellow-400 bg-white text-black border-white shadow-md dark:bg-white dark:text-black' : 'hover:text-yellow-400'}`}              >
-                ★ Favorites ★ 
-          </button>
-        </div>
-
         <div className="max-w-6xl mx-auto">
           <h2 className="text-center text-4xl font-bold mb-10 tracking-tight">
             {showStandings ? 'GoalHub Standings' : 'GoalHub Matches'}
           </h2>
-          
 
-          <div className="flex justify-between items-center mb-4">
-            <div className="flex flex-wrap justify-center gap-3">
+          <div className="flex flex-col sm:flex-row sm:justify-between items-center mb-4 gap-4">
+            {/* Lewa strona – ligi */}
+            <div className="flex flex-wrap justify-center sm:justify-start gap-3">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => {
                     setLeague(tab.id as any);
                     setSearchTerm('');
+                    setSelectedDate(null); // Reset date filter when changing league
                   }}
                   className={`rounded-full px-6 py-2.5 font-medium border transition-all duration-300 hover:scale-105 ${
                     league === tab.id
@@ -222,7 +340,76 @@ export default function GoalhubApp() {
                 </button>
               ))}
             </div>
+
+            {/* Prawa strona – favorites */}
+            <div className="flex justify-end">
+              <button
+                onClick={() => setShowFavoritesOnly(!showFavoritesOnly)}
+                className={`rounded-full px-6 py-2.5 font-medium border transition-all duration-300 hover:scale-105 ${
+                  showFavoritesOnly
+                    ? 'text-yellow-400 bg-white text-black border-white shadow-md dark:bg-white dark:text-black'
+                    : 'hover:text-yellow-400'
+                }`}
+              >
+                ★ Favorites ★
+              </button>
+            </div>
           </div>
+
+          {/* Calendar Section - Only shown for matches */}
+          {!showStandings && (
+            <div className="mb-6">
+              <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
+                <button
+                  onClick={() => setShowCalendar(!showCalendar)}
+                  className="rounded-full px-6 py-2.5 font-medium border bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300 hover:scale-105"
+                >
+                  📅 Filter by Date
+                </button>
+                
+                {selectedDate && (
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">
+                      Showing matches for: <strong>{formatDateForDisplay(selectedDate)}</strong>
+                    </span>
+                    <button
+                      onClick={clearDateFilter}
+                      className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium"
+                    >
+                      Clear
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {/* Calendar Dropdown */}
+              {showCalendar && (
+                <div className="mb-4 p-4 bg-white rounded-xl shadow-lg border border-gray-200 dark:bg-neutral-900 dark:border-neutral-700">
+                  <h3 className="text-lg font-semibold mb-3 text-center">Select Match Date</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 max-h-64 overflow-y-auto">
+                    {availableDates.map((date, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleDateSelect(date)}
+                        className={`p-3 rounded-lg text-sm font-medium transition-all duration-200 hover:scale-105 ${
+                          selectedDate === date
+                            ? 'bg-blue-600 text-white shadow-md'
+                            : 'bg-gray-100 hover:bg-gray-200 text-gray-800 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:text-gray-200'
+                        }`}
+                      >
+                        {formatDateForDisplay(date)}
+                      </button>
+                    ))}
+                  </div>
+                  {availableDates.length === 0 && (
+                    <p className="text-center text-gray-500 dark:text-gray-400">
+                      No match dates available for this league
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
 
           {showStandings ? (
             <div className="overflow-x-auto rounded-xl shadow-xl ring-1 ring-gray-200 bg-white dark:ring-white/10 dark:backdrop-blur-sm dark:bg-white/5">
@@ -362,7 +549,9 @@ export default function GoalhubApp() {
                   ) : (
                     <tr>
                       <td colSpan={5} className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                        {showFavoritesOnly
+                        {selectedDate
+                          ? `No matches found for ${formatDateForDisplay(selectedDate)}`
+                          : showFavoritesOnly
                           ? 'No matches with favorite teams found'
                           : `No matches found for "${searchTerm}"`}
                       </td>
