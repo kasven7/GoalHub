@@ -268,18 +268,6 @@ export default function GoalhubApp() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 shadow-md py-4 px-6 dark:bg-neutral-950 dark:border-white/10">
         <div className="max-w-6xl mx-auto flex justify-between items-center gap-4">
-          <button 
-            onClick={() => setDarkMode(!darkMode)}
-            className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
-            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-          >
-            {darkMode ? (
-              <span className="text-yellow-300">☀️</span>
-            ) : (
-              <span className="text-gray-700">🌙</span>
-            )}
-          </button>
-          
           <h1 
             className="text-2xl font-bold tracking-tight cursor-pointer hover:text-emerald-600 transition-colors duration-300"
             onClick={() => setCurrentPage('siuuu')}
@@ -341,6 +329,19 @@ export default function GoalhubApp() {
               ))}
             </div>
 
+            
+            {/* Prawa strona - Filter by Date*/}
+            <div className="flex justify-end">
+              {!showStandings && (
+                <button
+                  onClick={() => setShowCalendar(!showCalendar)}
+                  className="rounded-full px-6 py-2.5 font-medium bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  📅Calendar
+              </button>
+              )}
+            </div>    
+
             {/* Prawa strona – favorites */}
             <div className="flex justify-end">
               <button
@@ -359,13 +360,7 @@ export default function GoalhubApp() {
           {/* Calendar Section - Only shown for matches */}
           {!showStandings && (
             <div className="mb-6">
-              <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
-                <button
-                  onClick={() => setShowCalendar(!showCalendar)}
-                  className="rounded-full px-6 py-2.5 font-medium border bg-blue-600 hover:bg-blue-700 text-white transition-all duration-300 hover:scale-105"
-                >
-                  📅 Filter by Date
-                </button>
+              <div className="flex flex-wrap items-start justify-end gap-3 mb-4">
                 
                 {selectedDate && (
                   <div className="flex items-center gap-2">
