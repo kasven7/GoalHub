@@ -9,6 +9,7 @@ export default function GoalhubApp() {
   const [showStandings, setShowStandings] = useState(true);
   const [matches, setMatches] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  // Fix: Initialize as empty arrays instead of empty values
   const [originalData, setOriginalData] = useState([]);
   const [originalMatches, setOriginalMatches] = useState([]);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
@@ -71,31 +72,49 @@ export default function GoalhubApp() {
       fetch(`/api/${league}`)
         .then((res) => res.json())
         .then((data) => {
-          setData(data);
-          setOriginalData(data);
+          // Additional safety check to ensure data is an array
+          const safeData = Array.isArray(data) ? data : [];
+          setData(safeData);
+          setOriginalData(safeData);
         })
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          console.error(err);
+          // Set empty arrays on error
+          setData([]);
+          setOriginalData([]);
+        });
     } else {
       fetch(`/api/matches/${league}`)
         .then((res) => res.json())
         .then((data) => {
-          setMatches(data);
-          setOriginalMatches(data);
+          // Additional safety check to ensure data is an array
+          const safeData = Array.isArray(data) ? data : [];
+          setMatches(safeData);
+          setOriginalMatches(safeData);
           
           // Extract unique dates from matches for the current league
-          const dates = data
+          const dates = safeData
             .map((match: any) => new Date(match.matchDate).toDateString())
             .filter((date: string, index: number, array: string[]) => array.indexOf(date) === index)
             .sort((a: string, b: string) => new Date(a).getTime() - new Date(b).getTime());
           
           setAvailableDates(dates);
         })
-        .catch((err) => console.error(err));
+        .catch((err) => {
+          console.error(err);
+          // Set empty arrays on error
+          setMatches([]);
+          setOriginalMatches([]);
+          setAvailableDates([]);
+        });
     }
   }, [league, showStandings]);
 
   useEffect(() => {
-    let filtered = showStandings ? [...originalData] : [...originalMatches];
+    // Additional safety checks before spreading
+    let filtered = showStandings ? 
+      (Array.isArray(originalData) ? [...originalData] : []) : 
+      (Array.isArray(originalMatches) ? [...originalMatches] : []);
     
     // Apply date filter for matches
     if (!showStandings && selectedDate) {
@@ -149,9 +168,9 @@ export default function GoalhubApp() {
     setShowStandings((prev) => {
       const next = !prev;
       if (next) {
-        setData(originalData);
+        setData(Array.isArray(originalData) ? originalData : []);
       } else {
-        setMatches(originalMatches);
+        setMatches(Array.isArray(originalMatches) ? originalMatches : []);
       }
       return next;
     });
